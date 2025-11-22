@@ -40,9 +40,13 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
 
-    // Insert account - use cast to bypass type checking
+    // Generate a UUID for user_id (Supabase will enforce this field)
+    const generatedUserId = crypto.randomUUID();
+
+    // Insert account with user_id to satisfy Supabase's constraints
     const insertData = {
       id: accountId,
+      user_id: generatedUserId,
       email_address: email,
       provider: 'gmail',
       access_token: accessToken,
