@@ -71,3 +71,4 @@ build = ["npm", "run", "build"]
 NEXT_PUBLIC_SUPABASE_URL = "https://jkuywlhakplgufstocya.supabase.co"
 NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprdXl3bGhha3BsZ3Vmc3RvY3lhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4MjQ0NDcsImV4cCI6MjA3OTQwMDQ0N30.A84O2ibpmRq8cSkU8GL-BcydxOuLo24wIQfENRZeV5o"
 SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprdXl3bGhha3BsZ3Vmc3RvY3lhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MzgyNDQ0NywiZXhwIjoyMDc5NDAwNDQ3fQ._fQ77De05v8nsoFtrHO7Pl0KD21R970hbh1zhmqVCxE"
+JWT_SECRET = "smart-inbox-jwt-secret-key-2025"

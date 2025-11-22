@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import jwt from 'jsonwebtoken';
 
 export function middleware(request: NextRequest) {
   // Protected routes that require authentication
@@ -9,12 +10,19 @@ export function middleware(request: NextRequest) {
   const isProtected = protectedRoutes.some(route => pathname.startsWith(route));
 
   if (isProtected) {
-    // For MVP, we'll implement basic auth check
-    // In production, verify JWT token here
-    const hasAuth = request.cookies.get('auth-token')?.value || 
-                    request.headers.get('authorization');
+    // Check for session token in cookies
+    const sessionToken = request.cookies.get('session-token')?.value;
+    const jwtSecret = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
-    if (!hasAuth) {
+    if (!sessionToken) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    try {
+      // Verify JWT token
+      jwt.verify(sessionToken, jwtSecret);
+    } catch (error) {
+      // Token is invalid or expired
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }

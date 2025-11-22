@@ -28,6 +28,8 @@ export default function SignUp() {
         setEmail('');
         setPassword('');
         alert('Inscription réussie! Connectez-vous maintenant.');
+        // Redirect to login
+        window.location.href = '/login';
       }
     } catch (err) {
       setError('Une erreur est survenue');

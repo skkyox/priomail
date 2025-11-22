@@ -21,12 +21,16 @@ export default function Login() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
+        credentials: 'include', // Include cookies
       });
 
       const data = await response.json();
       if (!response.ok) {
         setError(data.error || 'Connexion échouée');
       } else {
+        // Session cookie is automatically set by the server
+        setEmail('');
+        setPassword('');
         router.push('/dashboard');
       }
     } catch (err) {
