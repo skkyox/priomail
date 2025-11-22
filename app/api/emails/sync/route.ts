@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
       .from('email_accounts')
       .upsert({
         id: accountId,
+        user_id: null,
         email_address: email,
         provider: 'gmail',
         access_token: accessToken,
