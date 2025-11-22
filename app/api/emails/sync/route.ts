@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     };
 
     const { error: accountError } = await supabase
-      .from('data.email_accounts')
+      .from('email_accounts')
       .insert([insertData as any])
       .select();
 
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
 
     // Save emails to Supabase
     // Insert emails (ignore duplicates)
-    const { error, data } = await supabase.from('data.emails').insert(emailsData).select();
+    const { error, data } = await supabase.from('emails').insert(emailsData).select();
 
     if (error) {
       console.error('Database error:', {

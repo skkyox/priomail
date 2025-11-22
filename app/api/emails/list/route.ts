@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
 
     // Get emails for user's accounts
     const { data: accounts } = await supabase
-      .from('data.email_accounts')
+      .from('email_accounts')
       .select('id');
 
     if (!accounts || accounts.length === 0) {
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     const accountIds = accounts.map((a: any) => a.id);
 
     const { data: emails, error } = await supabase
-      .from('data.emails')
+      .from('emails')
       .select('*')
       .in('account_id', accountIds)
       .order('received_at', { ascending: false })
