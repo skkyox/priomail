@@ -95,8 +95,6 @@ export default function EmailAccounts() {
       // Find the email for this account
       const account = accounts.find((acc) => acc.id === accountId);
       const emailAddress = email || account?.email_address;
-      // Generate a UUID for user_id (MVP - no real auth yet)
-      const userId = crypto.randomUUID();
 
       const response = await fetch('/api/emails/sync', {
         method: 'POST',
@@ -105,7 +103,6 @@ export default function EmailAccounts() {
         body: JSON.stringify({
           accessToken,
           accountId,
-          userId,
           email: emailAddress,
         }),
       });

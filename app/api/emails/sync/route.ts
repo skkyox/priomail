@@ -19,9 +19,9 @@ interface EmailMessage {
 
 export async function POST(request: NextRequest) {
   try {
-    const { accessToken, accountId, userId, email } = await request.json();
+    const { accessToken, accountId, email } = await request.json();
 
-    if (!accessToken || !accountId || !userId || !email) {
+    if (!accessToken || !accountId || !email) {
       return NextResponse.json(
         { error: 'Missing required parameters' },
         { status: 400 }
@@ -43,7 +43,6 @@ export async function POST(request: NextRequest) {
     // Create or update email_accounts entry
     const accountData: any = {
       id: accountId,
-      user_id: userId, // Include user_id to avoid null constraint error
       email_address: email,
       provider: 'gmail',
       access_token: accessToken,
