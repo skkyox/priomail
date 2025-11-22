@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Mail, Plus, Loader, RefreshCw } from 'lucide-react';
+import { Mail, Plus, Loader, RefreshCw, Trash2 } from 'lucide-react';
 
 interface EmailAccount {
   id: string;
@@ -118,6 +118,17 @@ export default function EmailAccounts() {
     window.location.href = '/api/emails/oauth/start';
   };
 
+  const deleteEmailAccount = (accountId: string) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce compte?')) {
+      // Remove from state
+      const updated = accounts.filter((acc) => acc.id !== accountId);
+      localStorage.setItem('email_accounts', JSON.stringify(updated));
+      localStorage.removeItem(`gmail_tokens_${accountId}`);
+      setAccounts(updated);
+      setMessage(`Compte supprimé avec succès`);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-4xl mx-auto">
@@ -195,6 +206,13 @@ export default function EmailAccounts() {
                         </>
                       )}
                     </button>
+                    <button
+                      onClick={() => deleteEmailAccount(account.id)}
+                      className="flex items-center space-x-1 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span>Supprimer</span>
+                    </button>
                   </div>
                 </div>
               ))}
@@ -205,13 +223,18 @@ export default function EmailAccounts() {
         {/* Connect Gmail Button */}
         <button
           onClick={handleConnectGmail}
-          disabled={loading || syncing}
+          disabled={loading || syncing || accounts.length > 0}
           className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
         >
           {syncing ? (
             <>
               <Loader className="w-5 h-5 animate-spin" />
               <span>Synchronisation en cours...</span>
+            </>
+          ) : accounts.length > 0 ? (
+            <>
+              <Plus className="w-5 h-5" />
+              <span>Compte déjà connecté (supprimez le pour en ajouter un autre)</span>
             </>
           ) : (
             <>
