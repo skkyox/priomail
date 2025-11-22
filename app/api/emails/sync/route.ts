@@ -40,18 +40,19 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
 
-    // Create or update email_accounts entry
+    // Create or update email_accounts entry - don't send user_id if null
+    const accountData: any = {
+      id: accountId,
+      email_address: email,
+      provider: 'gmail',
+      access_token: accessToken,
+      is_connected: true,
+      last_sync: new Date().toISOString(),
+    };
+
     const { error: accountError } = await supabase
       .from('email_accounts')
-      .upsert({
-        id: accountId,
-        user_id: null,
-        email_address: email,
-        provider: 'gmail',
-        access_token: accessToken,
-        is_connected: true,
-        last_sync: new Date().toISOString(),
-      }, {
+      .upsert(accountData, {
         onConflict: 'id',
       });
 
