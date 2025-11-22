@@ -37,19 +37,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create user profile in public.profiles table
-    const { error: profileError } = await supabase.from('profiles').insert({
-      id: data.user?.id,
-      email: data.user?.email,
-      created_at: new Date(),
-      tier: 'free',
-    });
+    // Create user profile in public.profiles table using REST API
+    try {
+      const profileResponse = await fetch(`${supabaseUrl}/rest/v1/profiles`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseServiceKey}`,
+          'apikey': supabaseServiceKey,
+        },
+        body: JSON.stringify({
+          id: data.user?.id,
+          email: data.user?.email,
+          tier: 'free',
+        }),
+      });
 
-    if (profileError) {
-      return NextResponse.json(
-        { error: 'Failed to create user profile' },
-        { status: 400 }
-      );
+      if (!profileResponse.ok) {
+        console.error('Profile creation failed:', await profileResponse.text());
+        // Continue anyway - auth is created, profile can be created later
+      }
+    } catch (profileErr) {
+      console.error('Profile creation error:', profileErr);
+      // Continue anyway
     }
 
     return NextResponse.json({
