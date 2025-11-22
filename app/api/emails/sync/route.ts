@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     // First try to insert, if it exists update
     const { data: existingAccount } = await supabase
-      .from('email_accounts')
+      .from('user_email_accounts')
       .select('id')
       .eq('id', accountId)
       .single();
@@ -61,14 +61,14 @@ export async function POST(request: NextRequest) {
     if (existingAccount) {
       // Update existing
       const { error } = await supabase
-        .from('email_accounts')
+        .from('user_email_accounts')
         .update(accountData)
         .eq('id', accountId);
       accountError = error;
     } else {
       // Insert new
       const { error } = await supabase
-        .from('email_accounts')
+        .from('user_email_accounts')
         .insert([accountData]);
       accountError = error;
     }
@@ -136,9 +136,7 @@ export async function POST(request: NextRequest) {
 
     // Save emails to Supabase
     // Insert emails (ignore duplicates)
-    const { error, data } = await supabase.from('emails').upsert(emailsData, {
-      onConflict: 'account_id,remote_id',
-    });
+    const { error, data } = await supabase.from('emails').insert(emailsData).select();
 
     if (error) {
       console.error('Database error:', {
