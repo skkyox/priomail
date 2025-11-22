@@ -19,22 +19,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "app_test"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "next_dev"
-
-[[workflows.workflow]]
-name = "app_test"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "node app.js"
-
-[workflows.workflow.metadata]
-outputType = "console"
 
 [[workflows.workflow]]
 name = "next_dev"
@@ -55,6 +40,10 @@ externalPort = 3000
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 34549
+externalPort = 3001
 
 [deployment]
 deploymentTarget = "autoscale"
