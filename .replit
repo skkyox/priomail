@@ -1,0 +1,32 @@
+entrypoint = "main.sql"
+run = "sqlite3 --init main.sql"
+modules = ["nodejs-20"]
+
+[nix]
+channel = "stable-24_05"
+
+[agent]
+expertMode = true
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "app_test"
+
+[[workflows.workflow]]
+name = "app_test"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node app.js"
+
+[workflows.workflow.metadata]
+outputType = "console"
