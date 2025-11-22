@@ -26,9 +26,8 @@ export async function GET(request: NextRequest) {
 
     // Get emails for user's accounts
     const { data: accounts } = await supabase
-      .from('email_accounts')
-      .select('id')
-      .eq('user_id', userId);
+      .from('data.email_accounts')
+      .select('id');
 
     if (!accounts || accounts.length === 0) {
       return NextResponse.json({
@@ -37,10 +36,10 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const accountIds = accounts.map((a) => a.id);
+    const accountIds = accounts.map((a: any) => a.id);
 
     const { data: emails, error } = await supabase
-      .from('emails')
+      .from('data.emails')
       .select('*')
       .in('account_id', accountIds)
       .order('received_at', { ascending: false })
