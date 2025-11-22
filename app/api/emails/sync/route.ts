@@ -115,16 +115,7 @@ export async function POST(request: NextRequest) {
       })
     );
 
-    // Save to Supabase
-    if (!env.supabase.url || !env.supabase.serviceKey) {
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
-    }
-
-    const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
-
+    // Save emails to Supabase
     // Insert emails (ignore duplicates)
     const { error, data } = await supabase.from('emails').upsert(emailsData, {
       onConflict: 'account_id,remote_id',
