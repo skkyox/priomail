@@ -30,7 +30,6 @@ export async function POST(request: NextRequest) {
 
     const gmail = getGmailClient(accessToken);
 
-    // First, ensure the email account exists in Supabase
     if (!env.supabase.url || !env.supabase.serviceKey) {
       return NextResponse.json(
         { error: 'Server configuration error' },
@@ -40,13 +39,9 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
 
-    // Use the MVP user ID (all data belongs to this single user in MVP mode)
-    const MVP_USER_ID = '00000000-0000-0000-0000-000000000000';
-
-    // Insert account data
+    // Insert account - NO user_id field
     const insertData = {
       id: accountId,
-      user_id: MVP_USER_ID,
       email_address: email,
       provider: 'gmail',
       access_token: accessToken,
@@ -108,12 +103,11 @@ export async function POST(request: NextRequest) {
         }
 
         return {
-          user_id: MVP_USER_ID,
           remote_id: msg.id,
           subject,
           sender,
           sender_name: sender.split('<')[0].trim(),
-          body_text: body.substring(0, 1000), // Limit to 1000 chars
+          body_text: body.substring(0, 1000),
           received_at: new Date(date).toISOString(),
           is_read: !msg.labelIds?.includes('UNREAD'),
           account_id: accountId,
@@ -122,7 +116,6 @@ export async function POST(request: NextRequest) {
     );
 
     // Save emails to Supabase
-    // Insert emails (ignore duplicates)
     const { error, data } = await supabase.from('emails').insert(emailsData).select();
 
     if (error) {

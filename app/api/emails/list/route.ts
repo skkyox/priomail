@@ -5,15 +5,7 @@ import { env } from '@/lib/config';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
-    const limit = parseInt(searchParams.get('limit') || '20');
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'User ID required' },
-        { status: 400 }
-      );
-    }
+    const limit = parseInt(searchParams.get('limit') || '50');
 
     if (!env.supabase.url || !env.supabase.serviceKey) {
       return NextResponse.json(
@@ -24,28 +16,10 @@ export async function GET(request: NextRequest) {
 
     const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
 
-    // MVP mode: use single user ID
-    const MVP_USER_ID = '00000000-0000-0000-0000-000000000000';
-
-    // Get emails for user's accounts
-    const { data: accounts } = await supabase
-      .from('email_accounts')
-      .select('id')
-      .eq('user_id', MVP_USER_ID);
-
-    if (!accounts || accounts.length === 0) {
-      return NextResponse.json({
-        emails: [],
-        message: 'No email accounts connected',
-      });
-    }
-
-    const accountIds = accounts.map((a: any) => a.id);
-
+    // Get all emails for MVP (single user)
     const { data: emails, error } = await supabase
       .from('emails')
       .select('*')
-      .in('account_id', accountIds)
       .order('received_at', { ascending: false })
       .limit(limit);
 
