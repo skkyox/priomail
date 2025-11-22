@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { Mail, AlertCircle, FileText, Send } from 'lucide-react';
+import { Mail, AlertCircle, FileText, Send, Settings } from 'lucide-react';
 
 interface Email {
   id: string;
@@ -89,6 +89,13 @@ export default function Dashboard() {
           <h1 className="text-2xl font-bold text-blue-600">📧 Smart Inbox</h1>
           <div className="flex items-center space-x-4">
             <span className="text-gray-600">{user?.email}</span>
+            <button
+              onClick={() => router.push('/email-accounts')}
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              <Settings className="w-4 h-4" />
+              <span>Comptes Email</span>
+            </button>
             <button
               onClick={handleLogout}
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
