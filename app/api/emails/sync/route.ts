@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
 
-    // Create or update email_accounts entry - don't send user_id if null
+    // Create or update email_accounts entry
     const accountData: any = {
       id: accountId,
       email_address: email,
@@ -50,11 +50,28 @@ export async function POST(request: NextRequest) {
       last_sync: new Date().toISOString(),
     };
 
-    const { error: accountError } = await supabase
+    // First try to insert, if it exists update
+    const { data: existingAccount } = await supabase
       .from('email_accounts')
-      .upsert(accountData, {
-        onConflict: 'id',
-      });
+      .select('id')
+      .eq('id', accountId)
+      .single();
+
+    let accountError: any = null;
+    if (existingAccount) {
+      // Update existing
+      const { error } = await supabase
+        .from('email_accounts')
+        .update(accountData)
+        .eq('id', accountId);
+      accountError = error;
+    } else {
+      // Insert new
+      const { error } = await supabase
+        .from('email_accounts')
+        .insert([accountData]);
+      accountError = error;
+    }
 
     if (accountError) {
       console.error('Account creation error:', accountError);
