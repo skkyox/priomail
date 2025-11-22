@@ -1,6 +1,6 @@
 entrypoint = "main.sql"
 run = "sqlite3 --init main.sql"
-modules = ["nodejs-20", "python-3.11"]
+modules = ["nodejs-20", "python-3.11", "postgresql-16"]
 
 [nix]
 channel = "stable-24_05"
@@ -40,6 +40,10 @@ externalPort = 3000
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 35513
+externalPort = 3001
 
 [deployment]
 deploymentTarget = "autoscale"
