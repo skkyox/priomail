@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Mail, Plus, Loader } from 'lucide-react';
+import { Mail, Plus, Loader, RefreshCw } from 'lucide-react';
 
 interface EmailAccount {
   id: string;
@@ -18,6 +18,20 @@ export default function EmailAccounts() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
+    // Load existing accounts from localStorage
+    const loadStoredAccounts = () => {
+      try {
+        const stored = localStorage.getItem('email_accounts');
+        if (stored) {
+          setAccounts(JSON.parse(stored));
+        }
+      } catch (error) {
+        console.error('Failed to load stored accounts:', error);
+      }
+    };
+
+    loadStoredAccounts();
+
     // Load email accounts from URL params (from OAuth callback)
     const params = new URLSearchParams(window.location.search);
     
@@ -59,7 +73,9 @@ export default function EmailAccounts() {
         JSON.stringify({ accessToken, refreshToken })
       );
 
-      setAccounts([...accounts, newAccount]);
+      const updatedAccounts = [...accounts, newAccount];
+      localStorage.setItem('email_accounts', JSON.stringify(updatedAccounts));
+      setAccounts(updatedAccounts);
       setMessage(`Connected ${email} successfully!`);
 
       // Sync emails
@@ -155,6 +171,30 @@ export default function EmailAccounts() {
                         Dernière sync: {new Date(account.last_sync).toLocaleDateString()}
                       </p>
                     )}
+                    <button
+                      onClick={() => {
+                        const tokens = JSON.parse(
+                          localStorage.getItem(`gmail_tokens_${account.id}`) || '{}'
+                        );
+                        if (tokens.accessToken) {
+                          syncEmails(account.id, tokens.accessToken);
+                        }
+                      }}
+                      disabled={syncing}
+                      className="flex items-center space-x-1 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 text-sm"
+                    >
+                      {syncing ? (
+                        <>
+                          <Loader className="w-4 h-4 animate-spin" />
+                          <span>Sync...</span>
+                        </>
+                      ) : (
+                        <>
+                          <RefreshCw className="w-4 h-4" />
+                          <span>Resync</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
               ))}
