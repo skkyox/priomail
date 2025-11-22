@@ -26,9 +26,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    // TODO: Extract user ID from session token
-    // For now, we'll need to pass it differently
-    // Store tokens in database
+    // For MVP, store tokens with temporary user ID
+    // In production, decode JWT to get actual user ID
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 

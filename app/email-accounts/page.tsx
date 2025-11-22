@@ -76,15 +76,20 @@ export default function EmailAccounts() {
       const response = await fetch('/api/emails/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           accessToken,
           accountId,
-          userId: 'current-user-id', // Should come from session
+          userId: 'current-user-id',
         }),
       });
 
       const data = await response.json();
-      setMessage(`Synced ${data.synced || 0} emails`);
+      if (response.ok) {
+        setMessage(`✓ ${data.synced || 0} emails synchronisés`);
+      } else {
+        setMessage(`Erreur: ${data.error}`);
+      }
     } catch (error) {
       setMessage('Failed to sync emails');
       console.error('Sync error:', error);
