@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
 
 export default function SignUp() {
   const [email, setEmail] = useState('');
@@ -16,20 +15,19 @@ export default function SignUp() {
     setError('');
 
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
-        },
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (error) {
-        setError(error.message);
+      const data = await response.json();
+      if (!response.ok) {
+        setError(data.error || 'Inscription échouée');
       } else {
         setEmail('');
         setPassword('');
-        alert('Vérifiez votre email pour confirmer votre inscription!');
+        alert('Inscription réussie! Connectez-vous maintenant.');
       }
     } catch (err) {
       setError('Une erreur est survenue');

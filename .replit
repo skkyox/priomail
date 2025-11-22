@@ -57,10 +57,16 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 45569
+localPort = 46237
 externalPort = 3001
 
 [deployment]
 deploymentTarget = "autoscale"
 run = ["npm", "start"]
 build = ["npm", "run", "build"]
+
+[userenv]
+
+[userenv.shared]
+NEXT_PUBLIC_SUPABASE_URL = "https://jkuywlhakplgufstocya.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprdXl3bGhha3BsZ3Vmc3RvY3lhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4MjQ0NDcsImV4cCI6MjA3OTQwMDQ0N30.A84O2ibpmRq8cSkU8GL-BcydxOuLo24wIQfENRZeV5o"
