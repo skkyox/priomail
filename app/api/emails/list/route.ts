@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { env } from '@/lib/config';
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,17 +15,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !supabaseServiceKey) {
+    if (!env.supabase.url || !env.supabase.serviceKey) {
       return NextResponse.json(
         { error: 'Server configuration error' },
         { status: 500 }
       );
     }
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
 
     // Get emails for user's accounts
     const { data: accounts } = await supabase

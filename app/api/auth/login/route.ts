@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import jwt from 'jsonwebtoken';
+import { env } from '@/lib/config';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,18 +14,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    const jwtSecret = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
-
-    if (!supabaseUrl || !supabaseServiceKey) {
+    if (!env.supabase.url || !env.supabase.serviceKey) {
       return NextResponse.json(
         { error: 'Server configuration error' },
         { status: 500 }
       );
     }
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
 
     // Use Supabase auth to verify credentials
     const { data, error: listError } = await supabase.auth.admin.listUsers();
@@ -51,8 +48,8 @@ export async function POST(request: NextRequest) {
     
     const sessionToken = jwt.sign(
       { userId: user.id, email: user.email },
-      jwtSecret,
-      { expiresIn: '7d' }
+      env.jwt.secret,
+      { expiresIn: env.jwt.expiresIn }
     );
 
     const response = NextResponse.json({
@@ -65,7 +62,7 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
       path: '/',
     });
 

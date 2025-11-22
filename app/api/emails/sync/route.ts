@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getGmailClient } from '@/lib/google-client';
 import { createClient } from '@supabase/supabase-js';
+import { env } from '@/lib/config';
 
 interface EmailMessage {
   id: string;
@@ -83,17 +84,14 @@ export async function POST(request: NextRequest) {
     );
 
     // Save to Supabase
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !supabaseServiceKey) {
+    if (!env.supabase.url || !env.supabase.serviceKey) {
       return NextResponse.json(
         { error: 'Server configuration error' },
         { status: 500 }
       );
     }
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
 
     // Insert emails (ignore duplicates)
     const { error } = await supabase.from('emails').upsert(emailsData, {

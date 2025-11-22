@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { env } from '@/lib/config';
 
 export async function POST(request: NextRequest) {
   const response = NextResponse.json({

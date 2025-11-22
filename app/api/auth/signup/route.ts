@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { env } from '@/lib/config';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,17 +13,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !supabaseServiceKey) {
+    if (!env.supabase.url || !env.supabase.serviceKey) {
       return NextResponse.json(
         { error: 'Server configuration error' },
         { status: 500 }
       );
     }
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
 
     const { data, error } = await supabase.auth.admin.createUser({
       email,
@@ -39,12 +37,12 @@ export async function POST(request: NextRequest) {
 
     // Create user profile in public.profiles table using REST API
     try {
-      const profileResponse = await fetch(`${supabaseUrl}/rest/v1/profiles`, {
+      const profileResponse = await fetch(`${env.supabase.url}/rest/v1/profiles`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabaseServiceKey}`,
-          'apikey': supabaseServiceKey,
+          'Authorization': `Bearer ${env.supabase.serviceKey}`,
+          'apikey': env.supabase.serviceKey,
         },
         body: JSON.stringify({
           id: data.user?.id,

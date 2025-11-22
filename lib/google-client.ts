@@ -1,8 +1,9 @@
 import { google } from 'googleapis';
+import { env } from './config';
 
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
-const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
-const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'http://localhost:5000/api/emails/oauth/callback';
+const CLIENT_ID = env.google.clientId;
+const CLIENT_SECRET = env.google.clientSecret;
+const REDIRECT_URI = env.google.redirectUri;
 
 export const getOAuthClient = () => {
   return new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);

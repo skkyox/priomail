@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getTokensFromCode, getUserInfo } from '@/lib/google-client';
 import { createClient } from '@supabase/supabase-js';
+import { env } from '@/lib/config';
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,14 +29,11 @@ export async function GET(request: NextRequest) {
 
     // For MVP, store tokens with temporary user ID
     // In production, decode JWT to get actual user ID
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !supabaseServiceKey) {
+    if (!env.supabase.url || !env.supabase.serviceKey) {
       return NextResponse.redirect(new URL('/email-accounts?error=config', request.url));
     }
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
 
     // For MVP, store in localStorage or pass via URL
     // In production, decrypt session and get user ID properly

@@ -1,7 +1,8 @@
 import OpenAI from 'openai';
+import { env } from './config';
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: env.openai.apiKey,
 });
 
 export async function analyzeEmail(subject: string, content: string, sender: string) {
