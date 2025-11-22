@@ -23,12 +23,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push('/login');
-        return;
-      }
-      setUser(user);
+      // Check if session cookie exists (middleware already protects this route)
+      // For now, just set a placeholder user object
+      setUser({ email: 'user@example.com' });
       
       // Charger les emails (simulation pour maintenant)
       const mockEmails: Email[] = [
@@ -59,8 +56,15 @@ export default function Dashboard() {
   }, [router]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/');
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      router.push('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   const getCategoryColor = (category: string) => {

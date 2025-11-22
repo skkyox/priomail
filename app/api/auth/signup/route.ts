@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify({
           id: data.user?.id,
           email: data.user?.email,
-          tier: 'free',
+          subscription_tier: 'free',
         }),
       });
 
