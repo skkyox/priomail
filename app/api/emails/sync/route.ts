@@ -94,13 +94,24 @@ export async function POST(request: NextRequest) {
     const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
 
     // Insert emails (ignore duplicates)
-    const { error } = await supabase.from('emails').upsert(emailsData, {
+    const { error, data } = await supabase.from('emails').upsert(emailsData, {
       onConflict: 'account_id,remote_id',
     });
 
     if (error) {
-      console.error('Database error:', error);
-      // Don't fail the sync, just log it
+      console.error('Database error:', {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      });
+      return NextResponse.json(
+        { 
+          error: `Database error: ${error.message}`,
+          details: error.details || error.hint
+        },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
@@ -111,7 +122,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Sync error:', error);
     return NextResponse.json(
-      { error: 'Failed to sync emails' },
+      { error: `Failed to sync emails: ${error instanceof Error ? error.message : String(error)}` },
       { status: 500 }
     );
   }
