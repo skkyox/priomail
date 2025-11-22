@@ -40,8 +40,8 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
 
-    // Create or update email_accounts entry
-    const accountData: any = {
+    // Insert account - use cast to bypass type checking
+    const insertData = {
       id: accountId,
       email_address: email,
       provider: 'gmail',
@@ -50,26 +50,13 @@ export async function POST(request: NextRequest) {
       last_sync: new Date().toISOString(),
     };
 
-    // Use raw SQL to bypass Supabase auth hooks that add user_id
-    let accountError: any = null;
-    try {
-      const { error } = await supabase.rpc('create_or_update_email_account', {
-        p_id: accountId,
-        p_email: email,
-        p_provider: 'gmail',
-        p_access_token: accessToken,
-        p_is_connected: true,
-        p_last_sync: new Date().toISOString(),
-      });
-      accountError = error;
-    } catch (e: any) {
-      // If RPC doesn't exist, fall back to direct insert
-      const { error } = await supabase.from('email_accounts').insert([accountData]).select();
-      accountError = error;
-    }
+    const { error: accountError } = await supabase
+      .from('email_accounts')
+      .insert([insertData as any])
+      .select();
 
     if (accountError) {
-      console.error('Account creation error:', accountError);
+      console.error('Account creation error:', JSON.stringify(accountError));
       return NextResponse.json(
         { error: `Failed to create email account: ${accountError.message}` },
         { status: 500 }
