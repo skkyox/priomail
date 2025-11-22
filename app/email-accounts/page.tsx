@@ -58,9 +58,12 @@ export default function EmailAccounts() {
     refreshToken: string
   ) => {
     try {
+      // Generate UUID for account ID
+      const accountId = crypto.randomUUID();
+      
       // In MVP, store in localStorage since we don't have proper session handling
       const newAccount = {
-        id: Date.now().toString(),
+        id: accountId,
         email_address: email,
         provider: 'gmail',
         is_connected: true,
