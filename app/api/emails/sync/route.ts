@@ -19,9 +19,9 @@ interface EmailMessage {
 
 export async function POST(request: NextRequest) {
   try {
-    const { accessToken, accountId, userId } = await request.json();
+    const { accessToken, accountId, userId, email } = await request.json();
 
-    if (!accessToken || !accountId || !userId) {
+    if (!accessToken || !accountId || !userId || !email) {
       return NextResponse.json(
         { error: 'Missing required parameters' },
         { status: 400 }
@@ -29,6 +29,38 @@ export async function POST(request: NextRequest) {
     }
 
     const gmail = getGmailClient(accessToken);
+
+    // First, ensure the email account exists in Supabase
+    if (!env.supabase.url || !env.supabase.serviceKey) {
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
+    const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
+
+    // Create or update email_accounts entry
+    const { error: accountError } = await supabase
+      .from('email_accounts')
+      .upsert({
+        id: accountId,
+        email_address: email,
+        provider: 'gmail',
+        access_token: accessToken,
+        is_connected: true,
+        last_sync: new Date().toISOString(),
+      }, {
+        onConflict: 'id',
+      });
+
+    if (accountError) {
+      console.error('Account creation error:', accountError);
+      return NextResponse.json(
+        { error: `Failed to create email account: ${accountError.message}` },
+        { status: 500 }
+      );
+    }
 
     // Get messages from Gmail
     const messagesResponse = await gmail.users.messages.list({

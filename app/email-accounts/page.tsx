@@ -82,16 +82,20 @@ export default function EmailAccounts() {
       setMessage(`Connected ${email} successfully!`);
 
       // Sync emails
-      syncEmails(newAccount.id, accessToken);
+      syncEmails(newAccount.id, accessToken, email);
     } catch (error) {
       setMessage('Failed to save email account');
       console.error('Save account error:', error);
     }
   };
 
-  const syncEmails = async (accountId: string, accessToken: string) => {
+  const syncEmails = async (accountId: string, accessToken: string, email?: string) => {
     setSyncing(true);
     try {
+      // Find the email for this account
+      const account = accounts.find((acc) => acc.id === accountId);
+      const emailAddress = email || account?.email_address;
+
       const response = await fetch('/api/emails/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -100,6 +104,7 @@ export default function EmailAccounts() {
           accessToken,
           accountId,
           userId: 'current-user-id',
+          email: emailAddress,
         }),
       });
 
