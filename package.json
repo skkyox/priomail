@@ -11,15 +11,20 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "openai": "^4.24.0",
-    "@supabase/supabase-js": "^2.38.0"
+    "@supabase/supabase-js": "^2.38.0",
+    "openai": "^4.104.0"
   },
   "devDependencies": {
-    "typescript": "^5.2.0",
+    "@types/node": "^20.3.0",
     "ts-node": "^10.9.0",
-    "@types/node": "^20.3.0"
+    "typescript": "^5.2.0"
   },
-  "keywords": ["email", "ai", "saas", "inbox"],
+  "keywords": [
+    "email",
+    "ai",
+    "saas",
+    "inbox"
+  ],
   "author": "",
   "license": "MIT"
 }

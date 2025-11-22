@@ -7,6 +7,7 @@ channel = "stable-24_05"
 
 [agent]
 expertMode = true
+integrations = ["javascript_openai:1.0.0"]
 
 [workflows]
 runButton = "Project"
