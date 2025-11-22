@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
     // Create or update email_accounts entry
     const accountData: any = {
       id: accountId,
+      user_id: userId, // Include user_id to avoid null constraint error
       email_address: email,
       provider: 'gmail',
       access_token: accessToken,
