@@ -24,10 +24,14 @@ export async function GET(request: NextRequest) {
 
     const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
 
+    // MVP mode: use single user ID
+    const MVP_USER_ID = '00000000-0000-0000-0000-000000000000';
+
     // Get emails for user's accounts
     const { data: accounts } = await supabase
       .from('email_accounts')
-      .select('id');
+      .select('id')
+      .eq('user_id', MVP_USER_ID);
 
     if (!accounts || accounts.length === 0) {
       return NextResponse.json({
