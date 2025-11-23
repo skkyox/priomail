@@ -73,13 +73,62 @@ We use environment variables to store sensitive configuration. Here's how:
 
 ### 4. Set Up the Database
 
-The database tables are created automatically when you first sync emails. No manual setup needed!
+**Important: Run this SQL in your Supabase dashboard to set up tables correctly:**
 
-If you want to reset the database:
-```bash
-# Drop all tables and recreate
-npm run db:reset
+1. Go to your Supabase project → SQL Editor
+2. Click "New query"
+3. Paste this SQL:
+
+```sql
+-- Drop existing tables
+DROP TABLE IF EXISTS emails CASCADE;
+DROP TABLE IF EXISTS email_accounts CASCADE;
+
+-- Create email_accounts (NO foreign key to auth.users)
+CREATE TABLE email_accounts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID,
+  email_address TEXT NOT NULL UNIQUE,
+  provider TEXT NOT NULL,
+  access_token TEXT NOT NULL,
+  refresh_token TEXT,
+  is_connected BOOLEAN DEFAULT TRUE,
+  last_sync TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create emails table
+CREATE TABLE emails (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID,
+  account_id UUID NOT NULL REFERENCES email_accounts(id) ON DELETE CASCADE,
+  remote_id TEXT NOT NULL,
+  subject TEXT,
+  sender TEXT,
+  sender_name TEXT,
+  body_text TEXT,
+  received_at TIMESTAMP WITH TIME ZONE,
+  ai_category TEXT,
+  ai_urgency_score INT DEFAULT 50,
+  ai_summary TEXT,
+  is_read BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(account_id, remote_id)
+);
+
+-- Create indexes for performance
+CREATE INDEX idx_emails_account_id ON emails(account_id);
+CREATE INDEX idx_emails_user_id ON emails(user_id);
+CREATE INDEX idx_email_accounts_user_id ON email_accounts(user_id);
+
+-- Disable RLS to avoid authentication issues in MVP
+ALTER TABLE email_accounts DISABLE ROW LEVEL SECURITY;
+ALTER TABLE emails DISABLE ROW LEVEL SECURITY;
 ```
+
+4. Click "Run" to execute
+5. Done! Your database is ready
 
 ### 5. Run the Development Server
 
@@ -174,6 +223,12 @@ npm run format
 - Check `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`
 - Ensure your Supabase project is active
 - Check internet connection
+
+### "violates foreign key constraint" Error
+
+If you get: `violates foreign key constraint "email_accounts_user_id_fkey"`
+
+This means your database still has the old schema with a foreign key to `auth.users`. **Run the database setup SQL above to fix it** (in step 4).
 
 ### Gmail won't authenticate
 
