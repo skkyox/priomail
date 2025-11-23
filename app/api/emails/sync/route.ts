@@ -39,9 +39,13 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
 
-    // Insert account - NO user_id field
+    // MVP mode: Use a fixed user ID for all data
+    const MVP_USER_ID = '00000000-0000-0000-0000-000000000000';
+
+    // Insert account with user_id for compatibility
     const insertData = {
       id: accountId,
+      user_id: MVP_USER_ID,
       email_address: email,
       provider: 'gmail',
       access_token: accessToken,
@@ -103,6 +107,7 @@ export async function POST(request: NextRequest) {
         }
 
         return {
+          user_id: MVP_USER_ID,
           remote_id: msg.id,
           subject,
           sender,

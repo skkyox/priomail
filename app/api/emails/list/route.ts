@@ -16,10 +16,14 @@ export async function GET(request: NextRequest) {
 
     const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
 
-    // Get all emails for MVP (single user)
+    // MVP mode: Use a fixed user ID for all data
+    const MVP_USER_ID = '00000000-0000-0000-0000-000000000000';
+
+    // Get all emails for MVP user
     const { data: emails, error } = await supabase
       .from('emails')
       .select('*')
+      .eq('user_id', MVP_USER_ID)
       .order('received_at', { ascending: false })
       .limit(limit);
 
