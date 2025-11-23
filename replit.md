@@ -129,7 +129,26 @@ GOOGLE_REDIRECT_URI             = OAuth callback URL
 - ✅ Organized API routes by feature
 - ✅ Consolidated all guides into this file
 
+## Recent Refactoring (November 23, 2025)
+
+### Database Architecture Fix
+- **Problem**: Supabase was automatically forcing `user_id` column with foreign key constraints to `auth.users`
+- **Solution**: Completely removed `user_id` from tables and simplified schema
+- Tables now: `email_accounts` (no user_id), `emails` (no user_id)
+- MVP mode: All data belongs to a single session/user
+
+### API Simplification
+- `/api/emails/sync/route.ts` - Removed all user_id logic, direct Supabase inserts
+- `/api/emails/list/route.ts` - Simplified to fetch all emails (MVP mode)
+- Removed unnecessary data filtering and user validation
+
+### Code Quality
+- ✅ Removed `.env` file (using `.env.example` template)
+- ✅ Created comprehensive README.md for new developers
+- ✅ Documented all environment variables
+- ✅ Added installation guide with .env.local setup instructions
+
 ---
 
-**Last Updated**: November 22, 2025
-**Status**: Alpha - Core features complete, ready for payment integration
+**Last Updated**: November 23, 2025
+**Status**: Alpha - Gmail OAuth working, database constraints resolved, ready for testing
